@@ -9,11 +9,11 @@
         <ContextMenu>
             <MenuItem
                 x:Name="AlwaysOnTopMenuItem"
-                Header="Enable always on top"
+                Header="Disable always on top"
                 Click="AlwaysOnTopMenuItem_Click"/>
             <MenuItem
                 x:Name="MinifyMenuItem"
-                Header="Show minimap only"
+                Header="Show full window"
                 Click="MinifyMenuItem_Click"/>
         </ContextMenu>
     </Window.ContextMenu>
