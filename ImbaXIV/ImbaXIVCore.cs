@@ -73,7 +73,7 @@ namespace ImbaXIV
 
                 foreach (var target in Targets)
                 {
-                    if (!entity.Name.Contains(target))
+                    if (!entity.Name.Contains(target) && !target.Equals("All!!"))
                         continue;
                     TargetInfo += $"{entity.Name}: {entity.Pos.X,4:N1} {entity.Pos.Y,4:N1} {entity.Pos.Z,4:N1}\n";
                     for (int i = 0; i < 56; ++i)
