@@ -12,19 +12,15 @@ namespace ImbaXIV
     {
         private ImbaXIVCore core;
         private bool minified = false;
-        private bool debugMode = false;
+        private bool debugMode = true;
 
         public MainWindow()
         {
             InitializeComponent();
             core = new ImbaXIVCore();
-            if (!debugMode)
-            {
-                DebugGrid.Visibility = Visibility.Hidden;
-                QuestEntitiesTextBox.Height += 128;
-                ToggleMinify();
-                this.Topmost = true;
-            }
+            ToggleDebug();
+            ToggleMinify();
+            this.Topmost = true;
             Task.Run(CoreWorker);
         }
 
@@ -167,6 +163,34 @@ namespace ImbaXIV
             else
             {
                 MinifyMenuItem.Header = "Show minimap only";
+            }
+        }
+
+        private void ToggleDebug()
+        {
+            debugMode = !debugMode;
+            if (debugMode)
+            {
+                DebugGrid.Visibility = Visibility.Visible;
+                QuestEntitiesTextBox.Height = 60;
+            }
+            else
+            {
+                DebugGrid.Visibility = Visibility.Hidden;
+                QuestEntitiesTextBox.Height = 188;
+            }
+        }
+
+        private void DebugMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleDebug();
+            if (debugMode)
+            {
+                DebugMenuItem.Header = "Disable debug mode";
+            }
+            else
+            {
+                DebugMenuItem.Header = "Enable debug mode";
             }
         }
     }

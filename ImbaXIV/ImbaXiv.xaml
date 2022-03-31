@@ -15,6 +15,10 @@
                 x:Name="MinifyMenuItem"
                 Header="Show full window"
                 Click="MinifyMenuItem_Click"/>
+            <MenuItem
+                x:Name="DebugMenuItem"
+                Header="Enable debug mode"
+                Click="DebugMenuItem_Click"/>
         </ContextMenu>
     </Window.ContextMenu>
     <Grid Margin="0,1,0,-1">
