@@ -24,12 +24,10 @@ namespace ImbaXIV
             Task.Run(CoreWorker);
         }
 
-        private void addCircle(double angle, double relativeXYDistance, double relativeZDistance)
+        private void addCircle(double angle, double relativeXYDistance)
         {
             double minimapRadius = MinimapCanvas.Width / 2;
-            double minCircleRadius = MinimapCanvas.Width / 50;
-            double maxCircleRadius = MinimapCanvas.Width / 30;
-            double circleRadius = minCircleRadius + (maxCircleRadius - minCircleRadius) * (1 - relativeZDistance);
+            double circleRadius = MinimapCanvas.Width / 30;
             double distanceFromCenter = relativeXYDistance * minimapRadius;
             double xDistanceFromCenter = Math.Cos(angle) * distanceFromCenter;
             double yDistanceFromCenter = Math.Sin(angle) * distanceFromCenter;
@@ -46,6 +44,43 @@ namespace ImbaXIV
             MinimapCanvas.Children.Add(myEllipse);
         }
 
+        private void addTriangle(double angle, double relativeXYDistance, double zDistance)
+        {
+            double minimapRadius = MinimapCanvas.Width / 2;
+            double circleRadius = MinimapCanvas.Width / 30;
+            double distanceFromCenter = relativeXYDistance * minimapRadius;
+            double xDistanceFromCenter = Math.Cos(angle) * distanceFromCenter;
+            double yDistanceFromCenter = Math.Sin(angle) * distanceFromCenter;
+            double xPos = MinimapCanvas.Width / 2 + xDistanceFromCenter - circleRadius;
+            double yPos = MinimapCanvas.Height / 2 + yDistanceFromCenter - circleRadius;
+
+            int zSign = Math.Sign(zDistance);
+            double topBtmPointX = circleRadius;
+            double topBtmPointY = zDistance > 0 ? 0 : 2 * circleRadius;
+            double leftPointX = Math.Cos(zSign * 150 * Math.PI / 180) * circleRadius + circleRadius;
+            double leftPointY = Math.Sin(zSign * 150 * Math.PI / 180) * circleRadius + circleRadius;
+            double rightPointX = Math.Cos(zSign * 30 * Math.PI / 180) * circleRadius + circleRadius;
+            double rightPointY = Math.Sin(zSign * 30 * Math.PI / 180) * circleRadius + circleRadius;
+
+            PointCollection myPointCollection = new PointCollection();
+            myPointCollection.Add(new Point(topBtmPointX, topBtmPointY));
+            myPointCollection.Add(new Point(leftPointX, leftPointY));
+            myPointCollection.Add(new Point(rightPointX, rightPointY));
+            myPointCollection.Add(new Point(topBtmPointX, topBtmPointY));
+
+            Polygon myPolygon = new Polygon();
+            myPolygon.Points = myPointCollection;
+            SolidColorBrush mySolidColorBrush = new SolidColorBrush();
+            mySolidColorBrush.Color = Color.FromArgb(133, 33, 33, 37);
+            myPolygon.Fill = mySolidColorBrush;
+            myPolygon.Width = circleRadius * 2;
+            myPolygon.Height = circleRadius * 2;
+            myPolygon.Stretch = Stretch.Fill;
+            Canvas.SetTop(myPolygon, xPos);
+            Canvas.SetLeft(myPolygon, yPos);
+            MinimapCanvas.Children.Add(myPolygon);
+        }
+
         private void addQuestEntityToMinimap(PosInfo mainCharPos, PosInfo entityPos)
         {
             double xyLimit = 60;
@@ -56,10 +91,18 @@ namespace ImbaXIV
             double xyAngle = Math.Atan2(xDelta, yDelta);
 
             double zLimit = 15;
-            double zDistance = Math.Abs(entityPos.Z - mainCharPos.Z);
-            double relativeZDistance = Math.Min(zDistance, zLimit) / zLimit;
+            double zDistance = entityPos.Z - mainCharPos.Z;
+            double AbsZDistance = Math.Abs(zDistance);
+            double relativeZDistance = Math.Min(AbsZDistance, zLimit) / zLimit;
 
-            addCircle(xyAngle, relativeXYDistance, relativeZDistance);
+            if (relativeZDistance > 0.25)
+            {
+                addTriangle(xyAngle, relativeXYDistance, zDistance);
+            }
+            else
+            {
+                addCircle(xyAngle, relativeXYDistance);
+            }
         }
 
         private void RemoveMinimapIcons()
