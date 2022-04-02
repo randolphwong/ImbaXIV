@@ -236,5 +236,10 @@ namespace ImbaXIV
                 DebugMenuItem.Header = "Enable debug mode";
             }
         }
+
+        private void CopyToClipboardMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetDataObject(StructCTextBox.Text);
+        }
     }
 }

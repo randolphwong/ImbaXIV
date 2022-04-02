@@ -33,7 +33,16 @@
 
         </Canvas>
         <Grid x:Name="DebugGrid" HorizontalAlignment="Left" Height="117" Margin="244,108,0,0" VerticalAlignment="Top" Width="376">
-            <TextBox x:Name="StructCTextBox" HorizontalAlignment="Left" Height="80" Margin="0,32,0,-137" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" FontSize="14" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas"/>
+            <TextBox x:Name="StructCTextBox" HorizontalAlignment="Left" Height="80" Margin="0,32,0,-137" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" FontSize="14" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas">
+                <TextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem
+                            x:Name="CopyToClipboardMenuItem"
+                            Header="Copy to clipboard"
+                            Click="CopyToClipboardMenuItem_Click"/>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
             <TextBlock HorizontalAlignment="Left" Margin="1,0,0,-48" TextWrapping="Wrap" Text="Targets:" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
             <TextBox x:Name="TargetsTextBox" HorizontalAlignment="Left" Height="23" Margin="53,0,0,-48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="181"/>
             <Button x:Name="TargetsBtn" Content="Update" HorizontalAlignment="Left" Margin="239,0,0,-48" VerticalAlignment="Top" Width="75" Height="23" FontSize="14" Click="TargetsBtn_Click"/>
