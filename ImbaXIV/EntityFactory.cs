@@ -37,8 +37,11 @@ namespace ImbaXIV
         private const int ENTITY_QUEST_OBJ_VAR1_OFFSET = 0x70;
         private const int ENTITY_QUEST_OBJ_VAR2_OFFSET = 0x94;
         private const int ENTITY_QUEST_OBJ_VAR3_OFFSET = 0xc0;
+        private const int ENTITY_QUEST_OBJ_VAR4_OFFSET = 0x114;
+        private const int ENTITY_QUEST_OBJ_VAR5_OFFSET = 0x124;
         private const int ENTITY_QUEST_OBJ_VAR1_VALUE = 7;
-        private const int ENTITY_QUEST_OBJ_VAR2_VALUE = 0xd1bf;
+        private const int ENTITY_QUEST_OBJ_VAR2_VALUE1 = 0xd1bf;
+        private const int ENTITY_QUEST_OBJ_VAR2_VALUE2 = 0xd1bc;
         private const int ENTITY_QUEST_OBJ_VAR3_VALUE = 0x3f000000;
 
         private const long MAIN_CHAR_STRUCTC_PTR_OFFSET = 0x01e7ccf0;
@@ -133,9 +136,14 @@ namespace ImbaXIV
             int questObjVar1 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR1_OFFSET);
             int questObjVar2 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR2_OFFSET);
             int questObjVar3 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR3_OFFSET);
-            entity.IsQuestObject = questObjVar1 == ENTITY_QUEST_OBJ_VAR1_VALUE &&
-                                   ((questObjVar2 & ENTITY_QUEST_OBJ_VAR2_VALUE) == ENTITY_QUEST_OBJ_VAR2_VALUE) &&
-                                   questObjVar3 == ENTITY_QUEST_OBJ_VAR3_VALUE;
+            int questObjVar4 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR4_OFFSET);
+            int questObjVar5 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR5_OFFSET);
+            entity.IsQuestObject = ((questObjVar1 & ENTITY_QUEST_OBJ_VAR1_VALUE) == ENTITY_QUEST_OBJ_VAR1_VALUE) &&
+                                   (((questObjVar2 & ENTITY_QUEST_OBJ_VAR2_VALUE1) == ENTITY_QUEST_OBJ_VAR2_VALUE1) ||
+                                   ((questObjVar2 & ENTITY_QUEST_OBJ_VAR2_VALUE2) == ENTITY_QUEST_OBJ_VAR2_VALUE2)) &&
+                                   questObjVar3 == ENTITY_QUEST_OBJ_VAR3_VALUE &&
+                                   questObjVar4 != 0 &&
+                                   questObjVar5 != 0;
 
             byte[] nameBytes = reader.ReadBytes(entityStructAddr + ENTITY_NAME_OFFSET, ENTITY_NAME_SIZE);
             String tmp = Encoding.UTF8.GetString(nameBytes);

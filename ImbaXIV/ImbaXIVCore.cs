@@ -65,7 +65,7 @@ namespace ImbaXIV
                 else if (entity.Type == EntityType.OBJECT)
                 {
                     // It is possible for the name to be empty - e.g. the purple circle surround enemy
-                    if (entity.IsQuestObject && entity.Name.Length > 0)
+                    if (entity.IsQuestObject)
                     {
                         QuestEntities.AddLast(entity);
                     }
