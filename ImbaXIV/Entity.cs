@@ -4,10 +4,15 @@ namespace ImbaXIV
 {
     enum EntityType
     {
-        NPC,
-        OBJECT,
-        ENEMY,
-        UNKNOWN
+        PlayerCharacter = 1,
+        BattleNpc = 2,
+        EventNpc = 3,
+        Aetheryte = 5,
+        EventObject = 7,
+        Companion = 9,
+        Retainer = 10,
+        HousingEventObject = 12,
+        Unknown
     }
 
     enum FloatingPlateType

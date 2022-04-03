@@ -55,14 +55,14 @@ namespace ImbaXIV
             foreach (var entity in allEntities)
             {
                 // Check for quest entities
-                if (entity.Type == EntityType.NPC || entity.Type == EntityType.ENEMY)
+                if (entity.Type == EntityType.EventNpc || entity.Type == EntityType.BattleNpc)
                 {
                     if (entity.QuestType != FloatingPlateType.UNKNOWN && entity.Name.Length > 0)
                     {
                         QuestEntities.AddLast(entity);
                     }
                 }
-                else if (entity.Type == EntityType.OBJECT)
+                else if (entity.Type == EntityType.EventObject)
                 {
                     // It is possible for the name to be empty - e.g. the purple circle surround enemy
                     if (entity.IsQuestObject)

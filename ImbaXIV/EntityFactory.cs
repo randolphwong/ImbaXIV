@@ -26,6 +26,8 @@ namespace ImbaXIV
         private const int ENTITY_NAME_OFFSET = 0x30;
         private const int ENTITY_NAME_SIZE = 0x40;
 
+        private const int ENTITY_KIND_OFFSET = 0x8c;
+
         private const int ENTITY_POS_OFFSET = 0xa0;
         private const int POS_X_OFFSET = 0x0;
         private const int POS_Y_OFFSET = 0x8;
@@ -103,23 +105,8 @@ namespace ImbaXIV
             Entity entity = new Entity();
             byte[] entityStructBytes = reader.ReadBytes(entityStructAddr, GENERIC_ENTITY_STRUCT_SIZE);
 
-            long vtable = BitConverter.ToInt64(entityStructBytes, 0);
-            long vtableOffset = vtable - (long)reader.ModuleBase;
-            switch (vtableOffset)
-            {
-                case NPC_VTABLE_OFFSET:
-                    entity.Type = EntityType.NPC;
-                    break;
-                case ENEMY_VTABLE_OFFSET:
-                    entity.Type = EntityType.ENEMY;
-                    break;
-                case OBJECT_VTABLE_OFFSET:
-                    entity.Type = EntityType.OBJECT;
-                    break;
-                default:
-                    entity.Type = EntityType.UNKNOWN;
-                    break;
-            }
+            int kind = entityStructBytes[ENTITY_KIND_OFFSET];
+            entity.Type = Enum.IsDefined(typeof(EntityType), kind) ? (EntityType)kind : EntityType.Unknown;
 
             FloatingPlateType questType = (FloatingPlateType)BitConverter.ToInt32(entityStructBytes, ENTITY_FLOATING_PLATE_OFFSET);
             bool isValidFloatingQuestPlate = questType == FloatingPlateType.MSQ_ONGOING_QUEST ||
