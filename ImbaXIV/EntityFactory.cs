@@ -1,63 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace ImbaXIV
 {
     class EntityFactory
     {
-        private const long ENTITY_MANAGER_PTR_OFFSET = 0x1ebdf70;
-        private const long ENTITY_MANAGER_ENTITY_CONTAINER_LIST_OFFSET = 0x1a0;
-        private const int ENTITY_CONTAINER_SIZE = 0x30;
-        private const int ENTITY_CONTAINER_CONTAINER1_OFFSET = 0x0;
-        private const int ENTITY_CONTAINER_CONTAINER2_OFFSET = 0x8;
-        private const int ENTITY_CONTAINER_CONTAINER3_OFFSET = 0x10;
-        private const int ENTITY_CONTAINER_TYPE_OFFSET = 0x18;
-        private const int ENTITY_CONTAINER_TYPE_INVALID_VALUE = 0x101;
-        private const int ENTITY_CONTAINER_UNK_STRUCT_OFFSET = 0x28;
-        private const int UNK_STRUCT_ENTITY_OFFSET = 0x8;
-
-        private const uint GENERIC_ENTITY_STRUCT_SIZE = 0x1c0;
-        private const long NPC_VTABLE_OFFSET = 0x0176f0e0;
-        private const long ENEMY_VTABLE_OFFSET = 0x0177f5f0;
-        private const long OBJECT_VTABLE_OFFSET = 0x018d9b10;
-
-        private const int ENTITY_NAME_OFFSET = 0x30;
-        private const int ENTITY_NAME_SIZE = 0x40;
-
-        private const int ENTITY_KIND_OFFSET = 0x8c;
-
-        private const int ENTITY_POS_OFFSET = 0xa0;
-        private const int POS_X_OFFSET = 0x0;
-        private const int POS_Y_OFFSET = 0x8;
-        private const int POS_Z_OFFSET = 0x4;
-        private const int POS_A_OFFSET = 0x10;
-
-        private const int ENTITY_FLOATING_PLATE_OFFSET = 0x100;
-
-        private const int ENTITY_QUEST_OBJ_VAR1_OFFSET = 0x70;
-        private const int ENTITY_QUEST_OBJ_VAR2_OFFSET = 0x94;
-        private const int ENTITY_QUEST_OBJ_VAR3_OFFSET = 0xc0;
-        private const int ENTITY_QUEST_OBJ_VAR4_OFFSET = 0x114;
-        private const int ENTITY_QUEST_OBJ_VAR5_OFFSET = 0x124;
-        private const int ENTITY_QUEST_OBJ_VAR1_VALUE = 7;
-        private const int ENTITY_QUEST_OBJ_VAR2_VALUE1 = 0xd1bf;
-        private const int ENTITY_QUEST_OBJ_VAR2_VALUE2 = 0xd1bc;
-        private const int ENTITY_QUEST_OBJ_VAR3_VALUE = 0x3f000000;
-
-        private const long MAIN_CHAR_STRUCTC_PTR_OFFSET = 0x01e7ccf0;
-
-        public static LinkedList<Entity> GetEntities(ProcessReader reader)
+        public static LinkedList<Entity> GetEntities(ProcessReader reader, GameData gameData)
         {
             LinkedList<Entity> entities = new LinkedList<Entity>();
-            long entityManagerPtr = reader.ReadInt64(ENTITY_MANAGER_PTR_OFFSET, reader.ModuleBase);
+            long entityManagerPtr = reader.ReadInt64(gameData.EntityManagerPtrOffset, reader.ModuleBase);
             if (entityManagerPtr == 0)
             {
                 return entities;
             }
 
-            long entityListPtr = reader.ReadInt64(entityManagerPtr + ENTITY_MANAGER_ENTITY_CONTAINER_LIST_OFFSET);
+            long entityListPtr = reader.ReadInt64(entityManagerPtr + gameData.EntityManagerEntityContainerListOffset);
             HashSet<long> seenEntities = new HashSet<long>();
             Queue<long> entityQueue = new Queue<long>();
             entityQueue.Enqueue(entityListPtr);
@@ -65,12 +23,12 @@ namespace ImbaXIV
             {
                 long curEntityContainer = entityQueue.Dequeue();
                 seenEntities.Add(curEntityContainer);
-                byte[] curEntityContainerBytes = reader.ReadBytes(curEntityContainer, ENTITY_CONTAINER_SIZE);
-                long first = BitConverter.ToInt64(curEntityContainerBytes, ENTITY_CONTAINER_CONTAINER1_OFFSET);
-                long second = BitConverter.ToInt64(curEntityContainerBytes, ENTITY_CONTAINER_CONTAINER2_OFFSET);
-                long third = BitConverter.ToInt64(curEntityContainerBytes, ENTITY_CONTAINER_CONTAINER3_OFFSET);
-                long unkStructPtr = BitConverter.ToInt64(curEntityContainerBytes, ENTITY_CONTAINER_UNK_STRUCT_OFFSET);
-                long containerType = BitConverter.ToInt64(curEntityContainerBytes, ENTITY_CONTAINER_TYPE_OFFSET);
+                byte[] curEntityContainerBytes = reader.ReadBytes(curEntityContainer, gameData.EntityContainerSize);
+                long first = BitConverter.ToInt64(curEntityContainerBytes, gameData.EntityContainerContainer1Offset);
+                long second = BitConverter.ToInt64(curEntityContainerBytes, gameData.EntityContainerContainer2Offset);
+                long third = BitConverter.ToInt64(curEntityContainerBytes, gameData.EntityContainerContainer3Offset);
+                long unkStructPtr = BitConverter.ToInt64(curEntityContainerBytes, gameData.EntityContainerUnkStructOffset);
+                long containerType = BitConverter.ToInt64(curEntityContainerBytes, gameData.EntityContainerTypeOffset);
                 if (!seenEntities.Contains(first))
                 {
                     entityQueue.Enqueue(first);
@@ -86,29 +44,29 @@ namespace ImbaXIV
                     entityQueue.Enqueue(third);
                     seenEntities.Add(third);
                 }
-                if (containerType == ENTITY_CONTAINER_TYPE_INVALID_VALUE)
+                if (containerType == gameData.EntityContainerTypeInvalidValue)
                     continue;
                 if (unkStructPtr == 0)
                     continue;
-                long entityStructPtr = reader.ReadInt64(unkStructPtr + UNK_STRUCT_ENTITY_OFFSET);
+                long entityStructPtr = reader.ReadInt64(unkStructPtr + gameData.UnkStructEntityOffset);
                 if (entityStructPtr == 0)
                     continue;
 
-                Entity entity = EntityFactory.GetEntity(reader, entityStructPtr);
+                Entity entity = EntityFactory.GetEntity(reader, gameData, entityStructPtr);
                 entities.AddLast(entity);
             }
             return entities;
         }
 
-        public static Entity GetEntity(ProcessReader reader, long entityStructAddr)
+        public static Entity GetEntity(ProcessReader reader, GameData gameData, long entityStructAddr)
         {
             Entity entity = new Entity();
-            byte[] entityStructBytes = reader.ReadBytes(entityStructAddr, GENERIC_ENTITY_STRUCT_SIZE);
+            byte[] entityStructBytes = reader.ReadBytes(entityStructAddr, gameData.GenericEntityStructSize);
 
-            int kind = entityStructBytes[ENTITY_KIND_OFFSET];
+            int kind = entityStructBytes[gameData.EntityKindOffset];
             entity.Type = Enum.IsDefined(typeof(EntityType), kind) ? (EntityType)kind : EntityType.Unknown;
 
-            FloatingPlateType questType = (FloatingPlateType)BitConverter.ToInt32(entityStructBytes, ENTITY_FLOATING_PLATE_OFFSET);
+            FloatingPlateType questType = (FloatingPlateType)BitConverter.ToInt32(entityStructBytes, gameData.EntityFloatingPlateOffset);
             bool isValidFloatingQuestPlate = questType == FloatingPlateType.MSQ_ONGOING_QUEST ||
                                              questType == FloatingPlateType.SMALL_MSQ_ONGOING_QUEST ||
                                              questType == FloatingPlateType.MSQ_COMPLETED_QUEST ||
@@ -120,42 +78,42 @@ namespace ImbaXIV
                                              questType == FloatingPlateType.BLUE_COMPLETED_QUEST;
             entity.QuestType = isValidFloatingQuestPlate ? questType : FloatingPlateType.UNKNOWN;
 
-            int questObjVar1 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR1_OFFSET);
-            int questObjVar2 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR2_OFFSET);
-            int questObjVar3 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR3_OFFSET);
-            int questObjVar4 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR4_OFFSET);
-            int questObjVar5 = BitConverter.ToInt32(entityStructBytes, ENTITY_QUEST_OBJ_VAR5_OFFSET);
-            entity.IsQuestObject = ((questObjVar1 & ENTITY_QUEST_OBJ_VAR1_VALUE) == ENTITY_QUEST_OBJ_VAR1_VALUE) &&
-                                   (((questObjVar2 & ENTITY_QUEST_OBJ_VAR2_VALUE1) == ENTITY_QUEST_OBJ_VAR2_VALUE1) ||
-                                   ((questObjVar2 & ENTITY_QUEST_OBJ_VAR2_VALUE2) == ENTITY_QUEST_OBJ_VAR2_VALUE2)) &&
-                                   questObjVar3 == ENTITY_QUEST_OBJ_VAR3_VALUE &&
+            int questObjVar1 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar1Offset);
+            int questObjVar2 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar2Offset);
+            int questObjVar3 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar3Offset);
+            int questObjVar4 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar4Offset);
+            int questObjVar5 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar5Offset);
+            entity.IsQuestObject = ((questObjVar1 & gameData.EntityQuestObjVar1Value) == gameData.EntityQuestObjVar1Value) &&
+                                   (((questObjVar2 & gameData.EntityQuestObjVar2Value1) == gameData.EntityQuestObjVar2Value1) ||
+                                   ((questObjVar2 & gameData.EntityQuestObjVar2Value2) == gameData.EntityQuestObjVar2Value2)) &&
+                                   questObjVar3 == gameData.EntityQuestObjVar3Value &&
                                    questObjVar4 != 0 &&
                                    questObjVar5 != 0;
 
-            byte[] nameBytes = reader.ReadBytes(entityStructAddr + ENTITY_NAME_OFFSET, ENTITY_NAME_SIZE);
+            byte[] nameBytes = reader.ReadBytes(entityStructAddr + gameData.EntityNameOffset, gameData.EntityNameSize);
             String tmp = Encoding.UTF8.GetString(nameBytes);
             int nullIdx = tmp.IndexOf('\0');
-            nullIdx = nullIdx == -1 ? ENTITY_NAME_SIZE : nullIdx;
+            nullIdx = nullIdx == -1 ? gameData.EntityNameSize : nullIdx;
             entity.Name = tmp.Substring(0, nullIdx);
 
-            entity.Pos.X = BitConverter.ToSingle(entityStructBytes, ENTITY_POS_OFFSET + POS_X_OFFSET);
-            entity.Pos.Y = BitConverter.ToSingle(entityStructBytes, ENTITY_POS_OFFSET + POS_Y_OFFSET);
-            entity.Pos.Z = BitConverter.ToSingle(entityStructBytes, ENTITY_POS_OFFSET + POS_Z_OFFSET);
-            entity.Pos.A = BitConverter.ToSingle(entityStructBytes, ENTITY_POS_OFFSET + POS_A_OFFSET);
+            entity.Pos.X = BitConverter.ToSingle(entityStructBytes, gameData.EntityPosOffset + gameData.PosXOffset);
+            entity.Pos.Y = BitConverter.ToSingle(entityStructBytes, gameData.EntityPosOffset + gameData.PosYOffset);
+            entity.Pos.Z = BitConverter.ToSingle(entityStructBytes, gameData.EntityPosOffset + gameData.PosZOffset);
+            entity.Pos.A = BitConverter.ToSingle(entityStructBytes, gameData.EntityPosOffset + gameData.PosAOffset);
 
             entity.StructPtr = entityStructAddr;
             return entity;
         }
 
-        public static Entity GetMainCharEntity(ProcessReader reader)
+        public static Entity GetMainCharEntity(ProcessReader reader, GameData gameData)
         {
-            long mainCharStructCPtr = reader.ReadInt64(MAIN_CHAR_STRUCTC_PTR_OFFSET, reader.ModuleBase);
+            long mainCharStructCPtr = reader.ReadInt64(gameData.MainCharEntityPtrOffset, reader.ModuleBase);
             if (mainCharStructCPtr == 0)
             {
                 return null;
             }
 
-            return EntityFactory.GetEntity(reader, mainCharStructCPtr);
+            return EntityFactory.GetEntity(reader, gameData, mainCharStructCPtr);
         }
     }
 }

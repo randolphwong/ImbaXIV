@@ -8,7 +8,7 @@ namespace ImbaXIV
     class ProcessReader
     {
         [DllImport("kernel32.dll")]
-        public static extern bool ReadProcessMemory(int pHandle, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, IntPtr lpNumberOfBytesRead);
+        public static extern bool ReadProcessMemory(int pHandle, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, IntPtr lpNumberOfBytesRead);
         [DllImport("kernel32.dll")]
         public static extern int OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
         
@@ -18,6 +18,7 @@ namespace ImbaXIV
         private int hdl;
 
         public IntPtr ModuleBase;
+        public byte[] ModuleMemory;
 
         public bool AttachProcess()
         {
@@ -34,6 +35,9 @@ namespace ImbaXIV
                 return false;
             }
             ModuleBase = ffxivProcess.MainModule.BaseAddress;
+            int moduleSize = ffxivProcess.MainModule.ModuleMemorySize;
+            ModuleMemory = ReadBytes((long)ModuleBase, moduleSize);
+
             return true;
         }
 
@@ -42,7 +46,7 @@ namespace ImbaXIV
             return !(ffxivProcess is null) && !ffxivProcess.HasExited;
         }
 
-        public byte[] ReadBytes(long addr, uint size)
+        public byte[] ReadBytes(long addr, int size)
         {
             byte[] buf = new byte[size];
             ReadProcessMemory(hdl, (IntPtr)addr, buf, size, IntPtr.Zero);
@@ -54,7 +58,7 @@ namespace ImbaXIV
             return ReadString(addr, 64);
         }
 
-        public String ReadString(long addr, uint size)
+        public String ReadString(long addr, int size)
         {
             byte[] buf = ReadBytes(addr, size);
             String tmp = Encoding.UTF8.GetString(buf);
@@ -64,7 +68,7 @@ namespace ImbaXIV
             return tmp.Substring(0, nullIdx);
         }
 
-        public String ReadString(long offset, IntPtr baseAddr, uint size)
+        public String ReadString(long offset, IntPtr baseAddr, int size)
         {
             long addr = (long)baseAddr + offset;
             return ReadString(addr, size);

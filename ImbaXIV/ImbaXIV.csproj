@@ -78,6 +78,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utils.cs" />
     <Page Include="ImbaXIV.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -87,6 +88,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EntityFactory.cs" />
+    <Compile Include="GameData.cs" />
     <Compile Include="ImbaXIVCore.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="ImbaXIV.xaml.cs">

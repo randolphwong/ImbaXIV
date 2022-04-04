@@ -6,6 +6,7 @@ namespace ImbaXIV
     class ImbaXIVCore
     {
         private ProcessReader reader;
+        private GameData gameData;
 
         public bool IsAttached = false;
         public String[] Targets;
@@ -16,6 +17,7 @@ namespace ImbaXIV
         public ImbaXIVCore()
         {
             reader = new ProcessReader();
+            gameData = new GameData();
             Targets = new string[0];
             QuestEntities = new LinkedList<Entity>();
             MainCharEntity = new Entity();
@@ -23,12 +25,16 @@ namespace ImbaXIV
 
         public bool AttachProcess()
         {
-            return reader.AttachProcess();
+            if (!reader.AttachProcess())
+                return false;
+            IsAttached = true;
+            gameData.Update(reader);
+            return true;
         }
 
         public void UpdateMainChar()
         {
-            Entity entity = EntityFactory.GetMainCharEntity(reader);
+            Entity entity = EntityFactory.GetMainCharEntity(reader, gameData);
             if (entity == null)
             {
                 MainCharEntity.Zeroise();
@@ -50,7 +56,7 @@ namespace ImbaXIV
 
             TargetInfo = "";
             QuestEntities = new LinkedList<Entity>();
-            LinkedList<Entity> allEntities = EntityFactory.GetEntities(reader);
+            LinkedList<Entity> allEntities = EntityFactory.GetEntities(reader, gameData);
 
             foreach (var entity in allEntities)
             {
