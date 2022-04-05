@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ImbaXIV
 {
@@ -55,6 +56,7 @@ namespace ImbaXIV
             UpdateMainChar();
 
             TargetInfo = "";
+            StringBuilder targetInfoSb = new StringBuilder("");
             QuestEntities = new LinkedList<Entity>();
             LinkedList<Entity> allEntities = EntityFactory.GetEntities(reader, gameData);
 
@@ -81,16 +83,17 @@ namespace ImbaXIV
                 {
                     if (!entity.Name.Contains(target) && !target.Equals("All!!"))
                         continue;
-                    TargetInfo += $"{entity.Name}: {entity.Pos.X,4:N1} {entity.Pos.Y,4:N1} {entity.Pos.Z,4:N1}\n";
+                    targetInfoSb.Append($"{entity.Name}: {entity.Pos.X,4:N1} {entity.Pos.Y,4:N1} {entity.Pos.Z,4:N1}\n");
                     for (int i = 0; i < 56; ++i)
                     {
                         long readAddr = entity.StructPtr + i * 8;
                         long val = reader.ReadInt64(readAddr);
-                        TargetInfo += $"{readAddr:X16}\t0x{val:X16}\n";
+                        targetInfoSb.Append($"{readAddr:X16}\t0x{val:X16}\n");
                     }
-                    TargetInfo += "\n";
+                    targetInfoSb.Append("\n");
                 }
             }
+            TargetInfo = targetInfoSb.ToString();
 
             return true;
         }
