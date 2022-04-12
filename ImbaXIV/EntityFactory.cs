@@ -81,12 +81,10 @@ namespace ImbaXIV
             int questObjVar1 = entityStructBytes[gameData.EntityQuestObjVar1Offset];
             int questObjVar2 = BitConverter.ToInt16(entityStructBytes, gameData.EntityQuestObjVar2Offset) & 0xffff;
             int questObjVar3 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar3Offset);
-            int questObjVar4 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar4Offset);
             entity.IsQuestObject = questObjVar1 == gameData.EntityQuestObjVar1Value &&
                                    (questObjVar2 == gameData.EntityQuestObjVar2Value1 ||
                                     questObjVar2 == gameData.EntityQuestObjVar2Value2) &&
-                                   questObjVar3 == gameData.EntityQuestObjVar3Value &&
-                                   questObjVar4 != 0;
+                                   questObjVar3 == gameData.EntityQuestObjVar3Value;
 
             byte[] nameBytes = reader.ReadBytes(entityStructAddr + gameData.EntityNameOffset, gameData.EntityNameSize);
             String tmp = Encoding.UTF8.GetString(nameBytes);

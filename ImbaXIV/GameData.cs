@@ -34,8 +34,6 @@ namespace ImbaXIV
         public int EntityQuestObjVar1Offset = 0x70;
         public int EntityQuestObjVar2Offset = 0x94;
         public int EntityQuestObjVar3Offset = 0xc0;
-        public int EntityQuestObjVar4Offset = 0x114;
-        public int EntityQuestObjVar5Offset = 0x124;
         public int EntityQuestObjVar1Value = 7;
         public int EntityQuestObjVar2Value1 = 0xd1bf;
         public int EntityQuestObjVar2Value2 = 0xd1bc;
