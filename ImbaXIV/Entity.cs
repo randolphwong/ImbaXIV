@@ -2,7 +2,7 @@
 
 namespace ImbaXIV
 {
-    enum EntityType
+    public enum EntityType
     {
         PlayerCharacter = 1,
         BattleNpc = 2,
@@ -15,7 +15,7 @@ namespace ImbaXIV
         Unknown
     }
 
-    enum FloatingPlateType
+    public enum FloatingPlateType
     {
         MSQ_ONGOING_QUEST = 0x11623,
         SMALL_MSQ_ONGOING_QUEST = 0x11624,
@@ -29,7 +29,7 @@ namespace ImbaXIV
         UNKNOWN
     }
 
-    class Entity
+    public class Entity
     {
         public String Name;
         public PosInfo Pos;
@@ -37,6 +37,7 @@ namespace ImbaXIV
         public FloatingPlateType QuestType;
         public bool IsQuestObject;
         public long StructPtr;
+        public bool IsVisible;
 
         public Entity()
         {

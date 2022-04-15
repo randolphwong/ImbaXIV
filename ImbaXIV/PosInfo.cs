@@ -1,6 +1,6 @@
 ﻿namespace ImbaXIV
 {
-    class PosInfo
+    public class PosInfo
     {
         public float X;
         public float Y;

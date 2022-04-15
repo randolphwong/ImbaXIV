@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ImbaXIV
 {
-    class ImbaXIVCore
+    public class ImbaXIVCore
     {
         private ProcessReader reader;
         private GameData gameData;

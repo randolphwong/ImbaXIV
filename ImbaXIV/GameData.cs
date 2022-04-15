@@ -31,12 +31,14 @@ namespace ImbaXIV
 
         public int EntityFloatingPlateOffset = 0x100;
 
+        public int EntityVisibilityOffset = 0x94;
+        public int EntityVisibilityQuestValue1 = 0xd1bf;
+        public int EntityVisibilityQuestValue2 = 0xd1bc;
+        public int EntityVisibilityIsVisible = 0xbf;
+
         public int EntityQuestObjVar1Offset = 0x70;
-        public int EntityQuestObjVar2Offset = 0x94;
         public int EntityQuestObjVar3Offset = 0xc0;
         public int EntityQuestObjVar1Value = 7;
-        public int EntityQuestObjVar2Value1 = 0xd1bf;
-        public int EntityQuestObjVar2Value2 = 0xd1bc;
         public int EntityQuestObjVar3Value = 0x3f000000;
 
         private const string MainCharEntityFindPattern = "84 c9 74 15 80 3d ?? ?? ?? ?? 00 74 0c 48 8b 05 ?? ?? ?? ?? 48 85 c0 75 07 48 8b 05";

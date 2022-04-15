@@ -26,12 +26,6 @@
         <TextBlock x:Name="MainCharPosTextBox" HorizontalAlignment="Left" Margin="66,205,0,0" TextWrapping="Wrap" Text="x: 000.0 y: 000.0 z: 000.0" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
         <TextBox x:Name="QuestEntitiesTextBox" HorizontalAlignment="Left" Height="60" Margin="244,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
         <TextBlock HorizontalAlignment="Left" Margin="244,6,0,0" TextWrapping="Wrap" Text="Quest entities" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
-        <Canvas HorizontalAlignment="Left" Height="186" Margin="17,11,0,0" VerticalAlignment="Top" Width="186">
-            <Ellipse Fill="#FFFFFFF5" Height="186" Canvas.Left="0" Stroke="Black" Canvas.Top="0" Width="186"/>
-            <Image x:Name="MinimapArrowImg" Height="22" Canvas.Left="81" Canvas.Top="84" Width="21" RenderTransformOrigin="0.5,0.364" Source="Resources/minimap_arrow.png"/>
-            <Canvas x:Name="MinimapCanvas" Height="186" Width="186"/>
-
-        </Canvas>
         <Grid x:Name="DebugGrid" HorizontalAlignment="Left" Height="117" Margin="244,108,0,0" VerticalAlignment="Top" Width="376">
             <TextBox x:Name="StructCTextBox" HorizontalAlignment="Left" Height="80" Margin="0,32,0,-137" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" FontSize="14" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas">
                 <TextBox.ContextMenu>
@@ -47,6 +41,11 @@
             <TextBox x:Name="TargetsTextBox" HorizontalAlignment="Left" Height="23" Margin="53,0,0,-48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="181"/>
             <Button x:Name="TargetsBtn" Content="Update" HorizontalAlignment="Left" Margin="239,0,0,-48" VerticalAlignment="Top" Width="75" Height="23" FontSize="14" Click="TargetsBtn_Click"/>
         </Grid>
+        <Slider x:Name="MinimapSlider" HorizontalAlignment="Left" Margin="33,70,0,0" VerticalAlignment="Top" Width="147"
+                Minimum="0.5" Value="1" Maximum="1.5" TickFrequency="0.1" SmallChange="0.05" LargeChange="0.1"
+                ValueChanged="MinimapSlider_ValueChanged" TickPlacement="BottomRight" IsSnapToTickEnabled="True"/>
+        <TextBlock HorizontalAlignment="Left" Margin="33,34,0,0" TextWrapping="Wrap" Text="Minimap size:" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
+        <TextBlock x:Name="MinimapSizeTextBlock" HorizontalAlignment="Left" Margin="128,34,0,0" TextWrapping="Wrap" Text="100%" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
 
     </Grid>
 </Window>

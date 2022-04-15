@@ -79,12 +79,13 @@ namespace ImbaXIV
             entity.QuestType = isValidFloatingQuestPlate ? questType : FloatingPlateType.UNKNOWN;
 
             int questObjVar1 = entityStructBytes[gameData.EntityQuestObjVar1Offset];
-            int questObjVar2 = BitConverter.ToInt16(entityStructBytes, gameData.EntityQuestObjVar2Offset) & 0xffff;
+            int entityVisibility = BitConverter.ToInt16(entityStructBytes, gameData.EntityVisibilityOffset) & 0xffff;
             int questObjVar3 = BitConverter.ToInt32(entityStructBytes, gameData.EntityQuestObjVar3Offset);
             entity.IsQuestObject = questObjVar1 == gameData.EntityQuestObjVar1Value &&
-                                   (questObjVar2 == gameData.EntityQuestObjVar2Value1 ||
-                                    questObjVar2 == gameData.EntityQuestObjVar2Value2) &&
+                                   (entityVisibility == gameData.EntityVisibilityQuestValue1 ||
+                                    entityVisibility == gameData.EntityVisibilityQuestValue2) &&
                                    questObjVar3 == gameData.EntityQuestObjVar3Value;
+            entity.IsVisible = (entityVisibility & 0xff) == gameData.EntityVisibilityIsVisible;
 
             byte[] nameBytes = reader.ReadBytes(entityStructAddr + gameData.EntityNameOffset, gameData.EntityNameSize);
             String tmp = Encoding.UTF8.GetString(nameBytes);
