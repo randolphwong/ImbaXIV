@@ -52,7 +52,7 @@
                  GotKeyboardFocus="TextBox_GotKeyboardFocus" LostKeyboardFocus="TextBox_LostKeyboardFocus"
                  PreviewKeyDown="MinimapHotkeyTextBox_PreviewKeyDown"
                  PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp"/>
-        <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" Margin="10,205,0,0" TextWrapping="Wrap" Text="a" VerticalAlignment="Top" Height="23" FontSize="14" Width="220"/>
+        <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" Margin="10,205,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="23" FontSize="14" Width="220"/>
         <Button x:Name="MinimapHotkeyUpdateBtn" Content="Update" HorizontalAlignment="Left" Margin="10,175,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="MinimapHotkeyUpdateBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
         <Button x:Name="MinimapHotkeyResetBtn" Content="Reset" HorizontalAlignment="Left" Margin="83,175,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="MinimapHotkeyResetBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
 
