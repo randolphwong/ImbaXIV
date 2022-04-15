@@ -18,7 +18,10 @@ namespace ImbaXIV
         private IntPtr _windowHandle;
         private HwndSource _source;
         private const int HOTKEY_ID = 1337;
-        private const int MOD_SHIFT = 0x4;
+        private const int MOD_ALT = 1;
+        private const int MOD_CONTROL = 2;
+        private const int MOD_SHIFT = 4;
+        private int minimapHotkey = 'C';
 
         [DllImport("user32.dll")]
         public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
@@ -48,21 +51,7 @@ namespace ImbaXIV
             _source = HwndSource.FromHwnd(_windowHandle);
             _source.AddHook(HwndHook);
 
-            RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_SHIFT, 0x4D);
-        }
-
-        private bool IsGameAtForeground()
-        {
-            const int bufSize = 256;
-            StringBuilder titleBuf = new StringBuilder(bufSize);
-            IntPtr hWnd = GetForegroundWindow();
-            if (GetWindowText(hWnd, titleBuf, bufSize) > 0)
-            {
-                string titleStr = titleBuf.ToString();
-                if (titleStr.Equals("FINAL FANTASY XIV"))
-                    return true;
-            }
-            return false;
+            RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_ALT | MOD_SHIFT | MOD_CONTROL, minimapHotkey);
         }
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -75,9 +64,9 @@ namespace ImbaXIV
                     {
                         case HOTKEY_ID:
                             int vkey = (((int)lParam >> 16) & 0xFFFF);
-                            if (vkey == 0x4D)
+                            if (vkey == minimapHotkey)
                             {
-                                if (IsGameAtForeground() && IsMinimapWindowOpened())
+                                if (IsMinimapWindowOpened())
                                 {
                                     minimapWindow.Topmost = !minimapWindow.Topmost;
                                     if (minimapWindow.Topmost)
