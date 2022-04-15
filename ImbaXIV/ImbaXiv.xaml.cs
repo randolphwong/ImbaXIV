@@ -2,7 +2,9 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Threading;
 using System.Text;
 
@@ -22,6 +24,9 @@ namespace ImbaXIV
         private const int MOD_CONTROL = 2;
         private const int MOD_SHIFT = 4;
         private int minimapHotkey = 'C';
+        private int pendingMinimapHotkey = 0;
+
+        private string _removeKeyBindMsg = "Right click to remove keybind";
 
         [DllImport("user32.dll")]
         public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
@@ -96,7 +101,8 @@ namespace ImbaXIV
         protected override void OnClosed(EventArgs e)
         {
             _source.RemoveHook(HwndHook);
-            UnregisterHotKey(_windowHandle, HOTKEY_ID);
+            if (minimapHotkey != 0)
+                UnregisterHotKey(_windowHandle, HOTKEY_ID);
             minimapWindow.Close();
             base.OnClosed(e);
         }
@@ -243,6 +249,71 @@ namespace ImbaXIV
                 return;
             minimapWindow.Resize(e.NewValue);
             MinimapSizeTextBlock.Text = $"{e.NewValue * 100}%";
+        }
+
+        private void TextBox_GotKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
+        {
+            MessageTextBlock.Text = _removeKeyBindMsg;
+        }
+
+        private void TextBox_LostKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
+        {
+                MessageTextBlock.Text = "";
+        }
+
+        private void TextBox_PreviewMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (minimapHotkey != 0)
+            {
+                UnregisterHotKey(_windowHandle, HOTKEY_ID);
+                MinimapHotkeyTextBox.Text = "<None>";
+            }
+            e.Handled = true;
+        }
+
+        private void MinimapHotkeyTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            bool isAlnum = (e.Key >= Key.A && e.Key <= Key.Z) ||
+                           (e.Key >= Key.D0 && e.Key <= Key.D9) ||
+                           (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9);
+
+            if (!isAlnum)
+                return;
+
+            string keyStr = e.Key.ToString();
+            if (e.Key >= Key.D0 && e.Key <= Key.D9)
+            {
+                int val = (int)e.Key - (int)Key.D0;
+                keyStr = $"{val}";
+            }
+            pendingMinimapHotkey = KeyInterop.VirtualKeyFromKey(e.Key);
+            MinimapHotkeyTextBox.Text = $"CTRL+SHIFT+ALT+{keyStr}";
+            MinimapHotkeyTextBox.Foreground = Brushes.Red;
+        }
+
+        private void MinimapHotkeyResetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MinimapHotkeyTextBox.Text = $"CTRL+SHIFT+ALT+{(char)minimapHotkey}";
+            MinimapHotkeyTextBox.Foreground = Brushes.Black;
+        }
+
+        private void MinimapHotkeyUpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (pendingMinimapHotkey == 0)
+                return;
+            if (minimapHotkey != 0)
+                UnregisterHotKey(_windowHandle, HOTKEY_ID);
+            bool ok = RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_ALT | MOD_SHIFT | MOD_CONTROL, pendingMinimapHotkey);
+            if (!ok)
+            {
+                MinimapHotkeyTextBox.Text = "<None>";
+                MessageTextBlock.Text = "Failed to register hotkey";
+            }
+            else
+                minimapHotkey = pendingMinimapHotkey;
+
+            MinimapHotkeyTextBox.Foreground = Brushes.Black;
+            pendingMinimapHotkey = 0;
         }
     }
 }

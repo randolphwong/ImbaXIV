@@ -22,8 +22,8 @@
         </ContextMenu>
     </Window.ContextMenu>
     <Grid Margin="0,1,0,-1">
-        <TextBlock HorizontalAlignment="Left" Margin="7,205,0,0" TextWrapping="Wrap" Text="My pos:" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
-        <TextBlock x:Name="MainCharPosTextBox" HorizontalAlignment="Left" Margin="66,205,0,0" TextWrapping="Wrap" Text="x: 000.0 y: 000.0 z: 000.0" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,6,0,0" TextWrapping="Wrap" Text="My pos:" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
+        <TextBlock x:Name="MainCharPosTextBox" HorizontalAlignment="Left" Margin="69,6,0,0" TextWrapping="Wrap" Text="x: 000.0 y: 000.0 z: 000.0" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
         <TextBox x:Name="QuestEntitiesTextBox" HorizontalAlignment="Left" Height="60" Margin="244,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
         <TextBlock HorizontalAlignment="Left" Margin="244,6,0,0" TextWrapping="Wrap" Text="Quest entities" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
         <Grid x:Name="DebugGrid" HorizontalAlignment="Left" Height="117" Margin="244,108,0,0" VerticalAlignment="Top" Width="376">
@@ -40,12 +40,21 @@
             <TextBlock HorizontalAlignment="Left" Margin="1,0,0,-48" TextWrapping="Wrap" Text="Targets:" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
             <TextBox x:Name="TargetsTextBox" HorizontalAlignment="Left" Height="23" Margin="53,0,0,-48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="181"/>
             <Button x:Name="TargetsBtn" Content="Update" HorizontalAlignment="Left" Margin="239,0,0,-48" VerticalAlignment="Top" Width="75" Height="23" FontSize="14" Click="TargetsBtn_Click"/>
+
         </Grid>
-        <Slider x:Name="MinimapSlider" HorizontalAlignment="Left" Margin="33,70,0,0" VerticalAlignment="Top" Width="147"
+        <Slider x:Name="MinimapSlider" HorizontalAlignment="Left" Margin="10,79,0,0" VerticalAlignment="Top" Width="147"
                 Minimum="0.5" Value="1" Maximum="1.5" TickFrequency="0.1" SmallChange="0.05" LargeChange="0.1"
                 ValueChanged="MinimapSlider_ValueChanged" TickPlacement="BottomRight" IsSnapToTickEnabled="True"/>
-        <TextBlock HorizontalAlignment="Left" Margin="33,34,0,0" TextWrapping="Wrap" Text="Minimap size:" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
-        <TextBlock x:Name="MinimapSizeTextBlock" HorizontalAlignment="Left" Margin="128,34,0,0" TextWrapping="Wrap" Text="100%" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,43,0,0" TextWrapping="Wrap" Text="Minimap size:" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
+        <TextBlock x:Name="MinimapSizeTextBlock" HorizontalAlignment="Left" Margin="105,43,0,0" TextWrapping="Wrap" Text="100%" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"><Run Text="Minimap keybind:"/></TextBlock>
+        <TextBox x:Name="MinimapHotkeyTextBox" HorizontalAlignment="Left" Height="23" Margin="10,145,0,0" TextWrapping="Wrap" Text="CTRL+SHIFT+ALT+C" VerticalAlignment="Top" Width="192"  FontSize="14" IsReadOnly="True"
+                 GotKeyboardFocus="TextBox_GotKeyboardFocus" LostKeyboardFocus="TextBox_LostKeyboardFocus"
+                 PreviewKeyDown="MinimapHotkeyTextBox_PreviewKeyDown"
+                 PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp"/>
+        <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" Margin="10,205,0,0" TextWrapping="Wrap" Text="a" VerticalAlignment="Top" Height="23" FontSize="14" Width="220"/>
+        <Button x:Name="MinimapHotkeyUpdateBtn" Content="Update" HorizontalAlignment="Left" Margin="10,175,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="MinimapHotkeyUpdateBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
+        <Button x:Name="MinimapHotkeyResetBtn" Content="Reset" HorizontalAlignment="Left" Margin="83,175,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="MinimapHotkeyResetBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
 
     </Grid>
 </Window>
