@@ -44,6 +44,13 @@ namespace ImbaXIV
             arrowIconSize.Y = MinimapArrowImg.Height;
             canvasSize.X = MinimapCanvas.Width;
             canvasSize.Y = MinimapCanvas.Height;
+
+            // Add a gap between the minimap circle and canvas so that the icons don't clip
+            double iconRadius = MinimapCanvas.Width / 25;
+            MinimapEllipse.Width -= 2 * iconRadius;
+            MinimapEllipse.Height -= 2 * iconRadius;
+            Canvas.SetLeft(MinimapEllipse, iconRadius);
+            Canvas.SetTop(MinimapEllipse, iconRadius);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -104,6 +111,12 @@ namespace ImbaXIV
             MinimapArrowImg.Height = ratio * arrowIconSize.Y;
             Canvas.SetLeft(MinimapArrowImg, ratio * arrowIconPos.X);
             Canvas.SetTop(MinimapArrowImg, ratio * arrowIconPos.Y);
+
+            double iconRadius = MinimapCanvas.Width / 25;
+            MinimapEllipse.Width -= 2 * iconRadius;
+            MinimapEllipse.Height -= 2 * iconRadius;
+            Canvas.SetLeft(MinimapEllipse, iconRadius);
+            Canvas.SetTop(MinimapEllipse, iconRadius);
         }
 
         public void Update()
@@ -121,7 +134,7 @@ namespace ImbaXIV
 
         private void addCircle(double angle, double relativeXYDistance)
         {
-            double minimapRadius = MinimapCanvas.Width / 2;
+            double minimapRadius = MinimapEllipse.Width / 2;
             double circleRadius = getIconRadius(relativeXYDistance);
             double distanceFromCenter = relativeXYDistance * minimapRadius;
             double xDistanceFromCenter = Math.Cos(angle) * distanceFromCenter;
@@ -132,6 +145,8 @@ namespace ImbaXIV
             SolidColorBrush mySolidColorBrush = new SolidColorBrush();
             mySolidColorBrush.Color = getIconColour(relativeXYDistance);
             myEllipse.Fill = mySolidColorBrush;
+            myEllipse.Stroke = Brushes.Black;
+            myEllipse.StrokeThickness = 1;
             myEllipse.Width = circleRadius * 2;
             myEllipse.Height = circleRadius * 2;
             Canvas.SetTop(myEllipse, xPos);
@@ -141,7 +156,7 @@ namespace ImbaXIV
 
         private void addTriangle(double angle, double relativeXYDistance, double zDistance)
         {
-            double minimapRadius = MinimapCanvas.Width / 2;
+            double minimapRadius = MinimapEllipse.Width / 2;
             double circleRadius = getIconRadius(relativeXYDistance);
             double distanceFromCenter = relativeXYDistance * minimapRadius;
             double xDistanceFromCenter = Math.Cos(angle) * distanceFromCenter;
@@ -171,6 +186,8 @@ namespace ImbaXIV
             myPolygon.Width = circleRadius * 2;
             myPolygon.Height = circleRadius * 2;
             myPolygon.Stretch = Stretch.Fill;
+            myPolygon.Stroke = Brushes.Black;
+            myPolygon.StrokeThickness = 1;
             Canvas.SetTop(myPolygon, xPos);
             Canvas.SetLeft(myPolygon, yPos);
             MinimapCanvas.Children.Add(myPolygon);
@@ -178,7 +195,7 @@ namespace ImbaXIV
 
         private Color getIconColour(double relativeXYDistance)
         {
-            Color c = relativeXYDistance > 0.9 ? Color.FromArgb(255, 112, 84, 109) : Color.FromArgb(133, 33, 33, 37);
+            Color c = relativeXYDistance > 0.9 ? Color.FromArgb(255, 255, 63, 0) : Color.FromArgb(133, 33, 33, 37);
             return c;
         }
 
