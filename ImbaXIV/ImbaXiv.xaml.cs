@@ -16,6 +16,7 @@ namespace ImbaXIV
         private MinimapWindow minimapWindow;
         private bool minified = false;
         private bool debugMode = true;
+        private Config _config;
 
         private IntPtr _windowHandle;
         private HwndSource _source;
@@ -23,10 +24,10 @@ namespace ImbaXIV
         private const int MOD_ALT = 1;
         private const int MOD_CONTROL = 2;
         private const int MOD_SHIFT = 4;
-        private int minimapHotkey = 'C';
-        private int pendingMinimapHotkey = 0;
+        private KeyBinding _minimapKeyBinding;
+        private KeyBinding _pendingMinimapKeyBinding;
 
-        private string _removeKeyBindMsg = "Right click to remove keybind";
+        private readonly string _removeKeyBindMsg = "Right click to remove keybind";
 
         [DllImport("user32.dll")]
         public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
@@ -44,8 +45,24 @@ namespace ImbaXIV
             ToggleDebug();
             ToggleMinify();
             Task.Run(CoreWorker);
-            minimapWindow = new MinimapWindow();
-            minimapWindow.Core = core;
+
+            _config = ConfigManager.Load();
+            if (_config.Version != ConfigManager.Version)
+                _config = new Config();
+
+            minimapWindow = new MinimapWindow(core, _config);
+            MinimapSlider.Value = _config.MinimapSize;
+            _minimapKeyBinding = new KeyBinding();
+            _pendingMinimapKeyBinding = new KeyBinding();
+            _minimapKeyBinding.Key = _config.MinimapKeyBindingKey;
+            _minimapKeyBinding.Modifiers = _config.MinimapKeyBindingModifiers;
+            if (_minimapKeyBinding.Key == Key.None)
+            {
+                _minimapKeyBinding.Key = Key.C;
+                _minimapKeyBinding.Modifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
+            }
+            string keybindStr = KeyBindingToString(_minimapKeyBinding);
+            MinimapHotkeyTextBox.Text = keybindStr;
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -56,19 +73,25 @@ namespace ImbaXIV
             _source = HwndSource.FromHwnd(_windowHandle);
             _source.AddHook(HwndHook);
 
-            RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_ALT | MOD_SHIFT | MOD_CONTROL, minimapHotkey);
+            if (_minimapKeyBinding.Key == Key.None)
+                return;
+
+            int vkCode = KeyInterop.VirtualKeyFromKey(_minimapKeyBinding.Key);
+            int modifiers = (int)_minimapKeyBinding.Modifiers;
+            RegisterHotKey(_windowHandle, HOTKEY_ID, modifiers, vkCode);
         }
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_HOTKEY = 0x0312;
+            int minimapHotkey = KeyInterop.VirtualKeyFromKey(_minimapKeyBinding.Key);
             switch (msg)
             {
                 case WM_HOTKEY:
                     switch (wParam.ToInt32())
                     {
                         case HOTKEY_ID:
-                            int vkey = (((int)lParam >> 16) & 0xFFFF);
+                            int vkey = ((int)lParam >> 16) & 0xFFFF;
                             if (vkey == minimapHotkey)
                             {
                                 if (IsMinimapWindowOpened())
@@ -82,7 +105,11 @@ namespace ImbaXIV
                             }
                             handled = true;
                             break;
+                        default:
+                            break;
                     }
+                    break;
+                default:
                     break;
             }
             return IntPtr.Zero;
@@ -101,9 +128,15 @@ namespace ImbaXIV
         protected override void OnClosed(EventArgs e)
         {
             _source.RemoveHook(HwndHook);
-            if (minimapHotkey != 0)
+            if (_minimapKeyBinding.Key != Key.None)
                 UnregisterHotKey(_windowHandle, HOTKEY_ID);
             minimapWindow.Close();
+
+            minimapWindow.UpdateConfig();
+            _config = minimapWindow.Config;
+            _config.MinimapKeyBindingModifiers = _minimapKeyBinding.Modifiers;
+            _config.MinimapKeyBindingKey = _minimapKeyBinding.Key;
+            ConfigManager.Save(_config);
             base.OnClosed(e);
         }
 
@@ -263,10 +296,14 @@ namespace ImbaXIV
 
         private void TextBox_PreviewMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (minimapHotkey != 0)
+            if (_minimapKeyBinding.Key != Key.None)
             {
                 UnregisterHotKey(_windowHandle, HOTKEY_ID);
                 MinimapHotkeyTextBox.Text = "<None>";
+                _minimapKeyBinding.Key = Key.None;
+                _minimapKeyBinding.Modifiers = ModifierKeys.None;
+                _pendingMinimapKeyBinding.Key = Key.None;
+                _pendingMinimapKeyBinding.Modifiers = ModifierKeys.None;
             }
             e.Handled = true;
         }
@@ -280,40 +317,62 @@ namespace ImbaXIV
             if (!isAlnum)
                 return;
 
-            string keyStr = e.Key.ToString();
-            if (e.Key >= Key.D0 && e.Key <= Key.D9)
-            {
-                int val = (int)e.Key - (int)Key.D0;
-                keyStr = $"{val}";
-            }
-            pendingMinimapHotkey = KeyInterop.VirtualKeyFromKey(e.Key);
-            MinimapHotkeyTextBox.Text = $"CTRL+SHIFT+ALT+{keyStr}";
+            _pendingMinimapKeyBinding.Key = e.Key;
+            _pendingMinimapKeyBinding.Modifiers = Keyboard.Modifiers;
+            string keybindStr = KeyBindingToString(_pendingMinimapKeyBinding);
+            MinimapHotkeyTextBox.Text = keybindStr;
             MinimapHotkeyTextBox.Foreground = Brushes.Red;
         }
 
         private void MinimapHotkeyResetBtn_Click(object sender, RoutedEventArgs e)
         {
-            MinimapHotkeyTextBox.Text = $"CTRL+SHIFT+ALT+{(char)minimapHotkey}";
+            string keybindStr = "<None>";
+            if (_minimapKeyBinding.Key != Key.None)
+                keybindStr = KeyBindingToString(_minimapKeyBinding);
+            MinimapHotkeyTextBox.Text = keybindStr;
             MinimapHotkeyTextBox.Foreground = Brushes.Black;
+        }
+
+        private string KeyBindingToString(KeyBinding keybinding)
+        {
+            string modifiers = keybinding.Modifiers == ModifierKeys.None ? "" : keybinding.Modifiers.ToString();
+            string keyStr = keybinding.Key.ToString();
+            if (keybinding.Key >= Key.D0 && keybinding.Key <= Key.D9)
+            {
+                int val = (int)keybinding.Key - (int)Key.D0;
+                keyStr = $"{val}";
+            }
+            return string.Join(" ", new string[] { modifiers, keyStr});
         }
 
         private void MinimapHotkeyUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (pendingMinimapHotkey == 0)
+            if (_pendingMinimapKeyBinding.Key == Key.None)
                 return;
-            if (minimapHotkey != 0)
+            if (_minimapKeyBinding.Key != Key.None)
                 UnregisterHotKey(_windowHandle, HOTKEY_ID);
-            bool ok = RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_ALT | MOD_SHIFT | MOD_CONTROL, pendingMinimapHotkey);
-            if (!ok)
+
+            if (!RegisterKeyBinding(_pendingMinimapKeyBinding))
             {
                 MinimapHotkeyTextBox.Text = "<None>";
                 MessageTextBlock.Text = "Failed to register hotkey";
             }
             else
-                minimapHotkey = pendingMinimapHotkey;
+            {
+                _minimapKeyBinding.Key = _pendingMinimapKeyBinding.Key;
+                _minimapKeyBinding.Modifiers = _pendingMinimapKeyBinding.Modifiers;
+            }
 
             MinimapHotkeyTextBox.Foreground = Brushes.Black;
-            pendingMinimapHotkey = 0;
+            _pendingMinimapKeyBinding.Key = Key.None;
+            _pendingMinimapKeyBinding.Modifiers = ModifierKeys.None;
+        }
+
+        private bool RegisterKeyBinding(KeyBinding keyBinding)
+        {
+            int vkCode = KeyInterop.VirtualKeyFromKey(keyBinding.Key);
+            int modifiers = (int)keyBinding.Modifiers;
+            return RegisterHotKey(_windowHandle, HOTKEY_ID, modifiers, vkCode);
         }
     }
 }

@@ -8,7 +8,8 @@
         Title="MinimapWindow" Height="186" Width="186"
         AllowsTransparency="True" WindowStyle="None"
         Topmost="True"
-        MouseDown="Window_MouseDown" Background="Transparent">
+        MouseDown="Window_MouseDown" Background="Transparent"
+        Loaded="Window_Loaded">
     <Border CornerRadius="93,93,93,93">
         <Grid>
             <Canvas HorizontalAlignment="Left" Height="186" Margin="0,0,0,0" VerticalAlignment="Top" Width="186">

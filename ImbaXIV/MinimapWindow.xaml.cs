@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace ImbaXIV
@@ -22,23 +16,66 @@ namespace ImbaXIV
 
     public partial class MinimapWindow : Window
     {
-        public ImbaXIVCore Core { get; set; }
+        private readonly ImbaXIVCore _core;
+        public Config Config;
 
         private Point arrowIconPos;
         private Point arrowIconSize;
         private Point canvasSize;
+        private double _currentRelativeSize;
 
         private HideReason hideReason;
 
-        public MinimapWindow()
+        public MinimapWindow(ImbaXIVCore core, Config config)
         {
             InitializeComponent();
+
+            _core = core;
+            Config = config;
+
+            Top = Config.MinimapPos.Y;
+            Left = Config.MinimapPos.X;
+            FixUpPositioning();
+            _currentRelativeSize = Config.MinimapSize;
+
             arrowIconPos.X = Canvas.GetLeft(MinimapArrowImg);
             arrowIconPos.Y = Canvas.GetTop(MinimapArrowImg);
             arrowIconSize.X = MinimapArrowImg.Width;
             arrowIconSize.Y = MinimapArrowImg.Height;
             canvasSize.X = MinimapCanvas.Width;
             canvasSize.Y = MinimapCanvas.Height;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            UpdateConfig();
+            base.OnClosed(e);
+        }
+
+        public void UpdateConfig()
+        {
+            Config.MinimapPos = new Point(Left, Top);
+            Config.MinimapSize = _currentRelativeSize;
+        }
+
+        private void FixUpPositioning()
+        {
+            // In case an external screen was used and it got disconnected.
+            if (IsInsideAnyScreen())
+                return;
+            Left = 0;
+            Top = 0;
+        }
+
+        private bool IsInsideAnyScreen()
+        {
+            System.Drawing.Point topLeft = new System.Drawing.Point((int)Left, (int)Top);
+            foreach (var screen in Screen.AllScreens)
+            {
+                if (screen.Bounds.Contains(topLeft))
+                    return true;
+            }
+            return false;
         }
 
         public void HideMinimap(HideReason reason)
@@ -55,6 +92,8 @@ namespace ImbaXIV
 
         public void Resize(double ratio)
         {
+            ratio = ratio == 0 ? 1 : ratio;
+            _currentRelativeSize = ratio;
             this.Width = ratio * canvasSize.X;
             this.Height = ratio * canvasSize.Y;
             MinimapCanvas.Width = ratio * canvasSize.X;
@@ -71,8 +110,8 @@ namespace ImbaXIV
         {
             RemoveMinimapIcons();
 
-            PosInfo mainCharPos = Core.MainCharEntity.Pos;
-            foreach (var entity in Core.QuestEntities)
+            PosInfo mainCharPos = _core.MainCharEntity.Pos;
+            foreach (var entity in _core.QuestEntities)
                 addQuestEntityToMinimap(mainCharPos, entity.Pos);
 
             double rotation = mainCharPos.A / Math.PI * 180;
@@ -185,6 +224,11 @@ namespace ImbaXIV
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Resize(_currentRelativeSize);
         }
     }
 }

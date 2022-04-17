@@ -84,6 +84,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Config.cs" />
+    <Compile Include="ConfigManager.cs" />
     <Compile Include="MinimapWindow.xaml.cs">
       <DependentUpon>MinimapWindow.xaml</DependentUpon>
     </Compile>
