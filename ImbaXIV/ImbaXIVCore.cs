@@ -11,15 +11,13 @@ namespace ImbaXIV
 
         public bool IsAttached = false;
         public String[] Targets;
-        public String TargetInfo;
+        private StringBuilder _targetInfoSb = new StringBuilder();
+        public String TargetInfo { get { return _targetInfoSb.ToString(); } }
         public LinkedList<Entity> QuestEntities = new LinkedList<Entity>();
         public Entity MainCharEntity;
         public string ManualTargetName { get; set; }
         private LinkedList<Entity> _manualTargetEntity = new LinkedList<Entity>();
-        public LinkedList<Entity> ManualTargetEntity
-        {
-            get { return _manualTargetEntity; }
-        }
+        public LinkedList<Entity> ManualTargetEntity { get { return _manualTargetEntity; } }
 
         public ImbaXIVCore()
         {
@@ -58,8 +56,7 @@ namespace ImbaXIV
 
             UpdateMainChar();
 
-            TargetInfo = "";
-            StringBuilder targetInfoSb = new StringBuilder("");
+            _targetInfoSb.Clear();
             QuestEntities.Clear();
             _manualTargetEntity.Clear();
             LinkedList<Entity> allEntities = EntityFactory.GetEntities(_reader, _gameData);
@@ -93,17 +90,16 @@ namespace ImbaXIV
                 {
                     if (!entity.Name.Contains(target) && !target.Equals("All!!"))
                         continue;
-                    targetInfoSb.Append($"{entity.Name}: {entity.Pos.X,4:N1} {entity.Pos.Y,4:N1} {entity.Pos.Z,4:N1}\n");
+                    _targetInfoSb.Append($"{entity.Name}: {entity.Pos.X,4:N1} {entity.Pos.Y,4:N1} {entity.Pos.Z,4:N1}\n");
                     for (int i = 0; i < 56; ++i)
                     {
                         long readAddr = entity.StructPtr + i * 8;
                         long val = _reader.ReadInt64(readAddr);
-                        targetInfoSb.Append($"{readAddr:X16}\t0x{val:X16}\n");
+                        _targetInfoSb.Append($"{readAddr:X16}\t0x{val:X16}\n");
                     }
-                    targetInfoSb.Append("\n");
+                    _targetInfoSb.Append("\n");
                 }
             }
-            TargetInfo = targetInfoSb.ToString();
 
             return true;
         }
