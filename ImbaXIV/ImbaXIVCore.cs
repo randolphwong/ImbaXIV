@@ -6,7 +6,7 @@ namespace ImbaXIV
 {
     public class ImbaXIVCore
     {
-        private ProcessReader reader;
+        private readonly ProcessReader _reader = new ProcessReader();
         private GameData gameData;
 
         public bool IsAttached = false;
@@ -23,7 +23,6 @@ namespace ImbaXIV
 
         public ImbaXIVCore()
         {
-            reader = new ProcessReader();
             gameData = new GameData();
             Targets = new string[0];
             MainCharEntity = new Entity();
@@ -31,16 +30,16 @@ namespace ImbaXIV
 
         public bool AttachProcess()
         {
-            if (!reader.AttachProcess())
+            if (!_reader.AttachProcess())
                 return false;
             IsAttached = true;
-            gameData.Update(reader);
+            gameData.Update(_reader);
             return true;
         }
 
         public void UpdateMainChar()
         {
-            Entity entity = EntityFactory.GetMainCharEntity(reader, gameData);
+            Entity entity = EntityFactory.GetMainCharEntity(_reader, gameData);
             if (entity == null)
             {
                 MainCharEntity.Zeroise();
@@ -51,7 +50,7 @@ namespace ImbaXIV
 
         public bool Update()
         {
-            if (!reader.CheckAlive())
+            if (!_reader.CheckAlive())
             {
                 IsAttached = false;
                 MainCharEntity.Zeroise();
@@ -64,7 +63,7 @@ namespace ImbaXIV
             StringBuilder targetInfoSb = new StringBuilder("");
             QuestEntities.Clear();
             _manualTargetEntity.Clear();
-            LinkedList<Entity> allEntities = EntityFactory.GetEntities(reader, gameData);
+            LinkedList<Entity> allEntities = EntityFactory.GetEntities(_reader, gameData);
 
             foreach (var entity in allEntities)
             {
@@ -99,7 +98,7 @@ namespace ImbaXIV
                     for (int i = 0; i < 56; ++i)
                     {
                         long readAddr = entity.StructPtr + i * 8;
-                        long val = reader.ReadInt64(readAddr);
+                        long val = _reader.ReadInt64(readAddr);
                         targetInfoSb.Append($"{readAddr:X16}\t0x{val:X16}\n");
                     }
                     targetInfoSb.Append("\n");
