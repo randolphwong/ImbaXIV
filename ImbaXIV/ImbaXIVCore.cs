@@ -7,7 +7,7 @@ namespace ImbaXIV
     public class ImbaXIVCore
     {
         private readonly ProcessReader _reader = new ProcessReader();
-        private GameData gameData;
+        private readonly GameData _gameData = new GameData();
 
         public bool IsAttached = false;
         public String[] Targets;
@@ -23,7 +23,6 @@ namespace ImbaXIV
 
         public ImbaXIVCore()
         {
-            gameData = new GameData();
             Targets = new string[0];
             MainCharEntity = new Entity();
         }
@@ -33,13 +32,13 @@ namespace ImbaXIV
             if (!_reader.AttachProcess())
                 return false;
             IsAttached = true;
-            gameData.Update(_reader);
+            _gameData.Update(_reader);
             return true;
         }
 
         public void UpdateMainChar()
         {
-            Entity entity = EntityFactory.GetMainCharEntity(_reader, gameData);
+            Entity entity = EntityFactory.GetMainCharEntity(_reader, _gameData);
             if (entity == null)
             {
                 MainCharEntity.Zeroise();
@@ -63,7 +62,7 @@ namespace ImbaXIV
             StringBuilder targetInfoSb = new StringBuilder("");
             QuestEntities.Clear();
             _manualTargetEntity.Clear();
-            LinkedList<Entity> allEntities = EntityFactory.GetEntities(_reader, gameData);
+            LinkedList<Entity> allEntities = EntityFactory.GetEntities(_reader, _gameData);
 
             foreach (var entity in allEntities)
             {
