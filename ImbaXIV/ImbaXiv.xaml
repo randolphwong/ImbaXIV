@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="IMBA XIV" Height="269" Width="628">
+        Title="IMBA XIV" Height="409" Width="628">
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem
@@ -26,8 +26,8 @@
         <TextBlock x:Name="MainCharPosTextBox" HorizontalAlignment="Left" Margin="69,6,0,0" TextWrapping="Wrap" Text="x: 000.0 y: 000.0 z: 000.0" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
         <TextBox x:Name="QuestEntitiesTextBox" HorizontalAlignment="Left" Height="60" Margin="244,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
         <TextBlock HorizontalAlignment="Left" Margin="244,6,0,0" TextWrapping="Wrap" Text="Quest entities" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Center"/>
-        <Grid x:Name="DebugGrid" HorizontalAlignment="Left" Height="117" Margin="244,108,0,0" VerticalAlignment="Top" Width="376">
-            <TextBox x:Name="StructCTextBox" HorizontalAlignment="Left" Height="80" Margin="0,32,0,-137" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" FontSize="14" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas">
+        <Grid x:Name="DebugGrid" HorizontalAlignment="Left" Height="202" Margin="244,108,0,0" VerticalAlignment="Top" Width="376">
+            <TextBox x:Name="StructCTextBox" HorizontalAlignment="Left" Margin="0,32,0,5" TextWrapping="Wrap" Width="362" FontSize="14" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas">
                 <TextBox.ContextMenu>
                     <ContextMenu>
                         <MenuItem
@@ -52,9 +52,12 @@
                  GotKeyboardFocus="TextBox_GotKeyboardFocus" LostKeyboardFocus="TextBox_LostKeyboardFocus"
                  PreviewKeyDown="MinimapHotkeyTextBox_PreviewKeyDown"
                  PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp"/>
-        <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" Margin="10,205,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="23" FontSize="14" Width="220"/>
+        <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" Margin="12,314,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="23" FontSize="14" Width="220"/>
         <Button x:Name="MinimapHotkeyUpdateBtn" Content="Update" HorizontalAlignment="Left" Margin="10,175,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="MinimapHotkeyUpdateBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
         <Button x:Name="MinimapHotkeyResetBtn" Content="Reset" HorizontalAlignment="Left" Margin="83,175,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="MinimapHotkeyResetBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
-
+        <TextBlock HorizontalAlignment="Left" Margin="12,219,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Left"><Run Language="en-sg" Text="Manual target:"/></TextBlock>
+        <TextBox x:Name="ManualTargetTextBox" HorizontalAlignment="Left" Height="23" Margin="10,247,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="192" FontSize="14" KeyDown="ManualTargetTextBox_KeyDown"/>
+        <Button x:Name="ManualTargetUpdateBtn" Content="Update" HorizontalAlignment="Left" Margin="10,277,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="ManualTargetUpdateBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
+        <Button x:Name="ManualTargetClearBtn" Content="Clear" HorizontalAlignment="Left" Margin="83,277,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="ManualTargetClearBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
     </Grid>
 </Window>

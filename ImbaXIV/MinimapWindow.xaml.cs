@@ -126,6 +126,8 @@ namespace ImbaXIV
             PosInfo mainCharPos = _core.MainCharEntity.Pos;
             foreach (var entity in _core.QuestEntities)
                 addQuestEntityToMinimap(mainCharPos, entity.Pos);
+            foreach (var entity in _core.ManualTargetEntity)
+                addQuestEntityToMinimap(mainCharPos, entity.Pos);
 
             double rotation = mainCharPos.A / Math.PI * 180;
             RotateTransform transform = new RotateTransform(-rotation);

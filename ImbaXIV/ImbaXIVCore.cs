@@ -12,15 +12,20 @@ namespace ImbaXIV
         public bool IsAttached = false;
         public String[] Targets;
         public String TargetInfo;
-        public LinkedList<Entity> QuestEntities;
+        public LinkedList<Entity> QuestEntities = new LinkedList<Entity>();
         public Entity MainCharEntity;
+        public string ManualTargetName { get; set; }
+        private LinkedList<Entity> _manualTargetEntity = new LinkedList<Entity>();
+        public LinkedList<Entity> ManualTargetEntity
+        {
+            get { return _manualTargetEntity; }
+        }
 
         public ImbaXIVCore()
         {
             reader = new ProcessReader();
             gameData = new GameData();
             Targets = new string[0];
-            QuestEntities = new LinkedList<Entity>();
             MainCharEntity = new Entity();
         }
 
@@ -57,7 +62,8 @@ namespace ImbaXIV
 
             TargetInfo = "";
             StringBuilder targetInfoSb = new StringBuilder("");
-            QuestEntities = new LinkedList<Entity>();
+            QuestEntities.Clear();
+            _manualTargetEntity.Clear();
             LinkedList<Entity> allEntities = EntityFactory.GetEntities(reader, gameData);
 
             foreach (var entity in allEntities)
@@ -77,6 +83,12 @@ namespace ImbaXIV
                     {
                         QuestEntities.AddLast(entity);
                     }
+                }
+
+                if (ManualTargetName != null && ManualTargetName.Length > 0)
+                {
+                    if (entity.Name.Contains(ManualTargetName))
+                        _manualTargetEntity.AddLast(entity);
                 }
 
                 foreach (var target in Targets)

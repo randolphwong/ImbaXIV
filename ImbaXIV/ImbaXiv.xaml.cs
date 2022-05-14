@@ -374,5 +374,27 @@ namespace ImbaXIV
             int modifiers = (int)keyBinding.Modifiers;
             return RegisterHotKey(_windowHandle, HOTKEY_ID, modifiers, vkCode);
         }
+
+        private void SetManualTarget(string targetName)
+        {
+            core.ManualTargetName = ManualTargetTextBox.Text;
+        }
+
+        private void ManualTargetUpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SetManualTarget(ManualTargetTextBox.Text);
+        }
+
+        private void ManualTargetClearBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ManualTargetTextBox.Text = "";
+            SetManualTarget("");
+        }
+
+        private void ManualTargetTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                SetManualTarget(ManualTargetTextBox.Text);
+        }
     }
 }
