@@ -82,7 +82,7 @@ namespace ImbaXIV
 
                 if (ManualTargetName != null && ManualTargetName.Length > 0)
                 {
-                    if (entity.Name.Contains(ManualTargetName) && entity.IsVisible)
+                    if (entity.Name.ToLower().Contains(ManualTargetName.ToLower()) && entity.IsVisible)
                         _manualTargetEntity.AddLast(entity);
                 }
 
