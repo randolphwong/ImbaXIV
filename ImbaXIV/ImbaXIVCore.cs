@@ -11,12 +11,12 @@ namespace ImbaXIV
 
         public bool IsAttached = false;
         public String[] Targets;
-        private StringBuilder _targetInfoSb = new StringBuilder();
+        private readonly StringBuilder _targetInfoSb = new StringBuilder();
         public String TargetInfo { get { return _targetInfoSb.ToString(); } }
         public LinkedList<Entity> QuestEntities = new LinkedList<Entity>();
         public Entity MainCharEntity;
         public string ManualTargetName { get; set; }
-        private LinkedList<Entity> _manualTargetEntity = new LinkedList<Entity>();
+        private readonly LinkedList<Entity> _manualTargetEntity = new LinkedList<Entity>();
         public LinkedList<Entity> ManualTargetEntity { get { return _manualTargetEntity; } }
 
         public ImbaXIVCore()
