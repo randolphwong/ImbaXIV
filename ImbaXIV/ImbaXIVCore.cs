@@ -13,11 +13,12 @@ namespace ImbaXIV
         public String[] Targets;
         private readonly StringBuilder _targetInfoSb = new StringBuilder();
         public String TargetInfo { get { return _targetInfoSb.ToString(); } }
-        public LinkedList<Entity> QuestEntities = new LinkedList<Entity>();
+        private readonly LinkedList<Entity> _questEntities = new LinkedList<Entity>();
+        public IEnumerable<Entity> QuestEntities { get { return _questEntities; } }
         public Entity MainCharEntity;
         public string ManualTargetName { get; set; }
-        private readonly LinkedList<Entity> _manualTargetEntity = new LinkedList<Entity>();
-        public LinkedList<Entity> ManualTargetEntity { get { return _manualTargetEntity; } }
+        private readonly LinkedList<Entity> _manualTargetEntities = new LinkedList<Entity>();
+        public IEnumerable<Entity> ManualTargetEntities { get { return _manualTargetEntities; } }
 
         public ImbaXIVCore()
         {
@@ -57,8 +58,8 @@ namespace ImbaXIV
             UpdateMainChar();
 
             _targetInfoSb.Clear();
-            QuestEntities.Clear();
-            _manualTargetEntity.Clear();
+            _questEntities.Clear();
+            _manualTargetEntities.Clear();
             LinkedList<Entity> allEntities = EntityFactory.GetEntities(_reader, _gameData);
 
             foreach (var entity in allEntities)
@@ -68,7 +69,7 @@ namespace ImbaXIV
                 {
                     if (entity.QuestType != FloatingPlateType.UNKNOWN && entity.Name.Length > 0)
                     {
-                        QuestEntities.AddLast(entity);
+                        _questEntities.AddLast(entity);
                     }
                 }
                 else if (entity.Type == EntityType.EventObject)
@@ -76,14 +77,14 @@ namespace ImbaXIV
                     // It is possible for the name to be empty - e.g. the purple circle surround enemy
                     if (entity.IsQuestObject)
                     {
-                        QuestEntities.AddLast(entity);
+                        _questEntities.AddLast(entity);
                     }
                 }
 
                 if (ManualTargetName != null && ManualTargetName.Length > 0)
                 {
                     if (entity.Name.ToLower().Contains(ManualTargetName.ToLower()) && entity.IsVisible)
-                        _manualTargetEntity.AddLast(entity);
+                        _manualTargetEntities.AddLast(entity);
                 }
 
                 foreach (var target in Targets)
