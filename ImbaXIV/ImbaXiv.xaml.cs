@@ -377,7 +377,8 @@ namespace ImbaXIV
 
         private void SetManualTarget(string targetName)
         {
-            core.ManualTargetName = ManualTargetTextBox.Text;
+            core.ManualTargetName = targetName;
+            ManualTargetTextBlock.Text = targetName == "" ? "None" : targetName;
         }
 
         private void ManualTargetUpdateBtn_Click(object sender, RoutedEventArgs e)

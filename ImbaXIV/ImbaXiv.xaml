@@ -59,5 +59,6 @@
         <TextBox x:Name="ManualTargetTextBox" HorizontalAlignment="Left" Height="23" Margin="10,247,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="192" FontSize="14" KeyDown="ManualTargetTextBox_KeyDown"/>
         <Button x:Name="ManualTargetUpdateBtn" Content="Update" HorizontalAlignment="Left" Margin="10,277,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="ManualTargetUpdateBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
         <Button x:Name="ManualTargetClearBtn" Content="Clear" HorizontalAlignment="Left" Margin="83,277,0,0" VerticalAlignment="Top" Width="64" Height="23" FontSize="14" Click="ManualTargetClearBtn_Click" RenderTransformOrigin="-0.018,-0.696"/>
+        <TextBlock x:Name="ManualTargetTextBlock" HorizontalAlignment="Left" Margin="105,219,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" TextAlignment="Left"><Run Language="en-sg" Text="None"/></TextBlock>
     </Grid>
 </Window>
