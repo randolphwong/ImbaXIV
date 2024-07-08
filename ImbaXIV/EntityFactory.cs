@@ -79,19 +79,32 @@ namespace ImbaXIV
             entity.QuestType = isValidFloatingQuestPlate ? questType : FloatingPlateType.UNKNOWN;
 
             int questObjVar1 = entityStructBytes[GameData.EntityQuestObjVar1Offset];
-            int entityVisibility = BitConverter.ToInt16(entityStructBytes, GameData.EntityVisibilityOffset) & 0xffff;
+            int entityVisibility = BitConverter.ToInt32(entityStructBytes, GameData.EntityVisibilityOffset);
+            int questEntityVisibility = (entityVisibility & 0x00ffff00) >> 8;
             int questObjVar3 = BitConverter.ToInt32(entityStructBytes, GameData.EntityQuestObjVar3Offset);
             entity.IsQuestObject = questObjVar1 == GameData.EntityQuestObjVar1Value &&
-                                   (entityVisibility == GameData.EntityVisibilityQuestValue1 ||
-                                    entityVisibility == GameData.EntityVisibilityQuestValue2) &&
+                                   (questEntityVisibility == GameData.EntityVisibilityQuestValue1 ||
+                                    questEntityVisibility == GameData.EntityVisibilityQuestValue2) &&
                                    questObjVar3 == GameData.EntityQuestObjVar3Value;
-            entity.IsVisible = (entityVisibility & 0xff) == GameData.EntityVisibilityIsVisible;
 
             byte[] nameBytes = reader.ReadBytes(entityStructAddr + GameData.EntityNameOffset, GameData.EntityNameSize);
             String tmp = Encoding.UTF8.GetString(nameBytes);
             int nullIdx = tmp.IndexOf('\0');
             nullIdx = nullIdx == -1 ? GameData.EntityNameSize : nullIdx;
             entity.Name = tmp.Substring(0, nullIdx);
+
+            if (entity.IsQuestObject)
+            {
+                entity.IsVisible = (entityVisibility & 0xff) == GameData.EntityVisibilityIsVisible;
+            }
+            else if (entity.Type == EntityType.PlayerCharacter)
+            {
+                entity.IsVisible = (entityVisibility & 0xff) == 0;
+            }
+            else if (entity.Name.Equals("Aether Current"))
+            {
+                entity.IsVisible = questEntityVisibility == GameData.AetherCurrentVisibilityValue;
+            }
 
             entity.Pos.X = BitConverter.ToSingle(entityStructBytes, GameData.EntityPosOffset + GameData.PosXOffset);
             entity.Pos.Y = BitConverter.ToSingle(entityStructBytes, GameData.EntityPosOffset + GameData.PosYOffset);

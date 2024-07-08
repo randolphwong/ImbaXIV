@@ -4,8 +4,9 @@ namespace ImbaXIV
 {
     class GameData
     {
-        private const string EntityManagerPtrFindPattern = "48 83 3d ?? ?? ?? 01 00 74 1c e8 ?? ?? ?? ?? 48 8d 88 ?? 03 00 00 e8";
-        public int EntityManagerPtrOffset = 0x1ebdf70;
+        // Based on 7.0
+        private const string EntityManagerPtrFindPattern = "48 89 05 ?? ?? ?? ?? 48 83 C4 28 E9 ?? ?? ?? 00 48 89 05 ?? ?? ?? ?? 48 83 C4 28 E9";
+        public int EntityManagerPtrOffset = 0x027686a0;
         public const int EntityManagerEntityContainerListOffset = 0x1a0;
         public const int EntityContainerSize = 0x30;
         public const int EntityContainerContainer1Offset = 0x0;
@@ -31,9 +32,10 @@ namespace ImbaXIV
 
         public const int EntityFloatingPlateOffset = 0x110;
 
-        public const int EntityVisibilityOffset = 0x95;
+        public const int EntityVisibilityOffset = 0x94;
         public const int EntityVisibilityQuestValue1 = 0x68ff;
-        public const int EntityVisibilityQuestValue2 = 0xd1bc;
+        public const int EntityVisibilityQuestValue2 = 0xd1fb;
+        public const int AetherCurrentVisibilityValue = 0x51fb; // becomes 0x415b when not visible
         public const int EntityVisibilityIsVisible = 0xff;
 
         public const int EntityQuestObjVar1Offset = 0x70;
@@ -41,19 +43,19 @@ namespace ImbaXIV
         public const int EntityQuestObjVar1Value = 7;
         public const int EntityQuestObjVar3Value = 0x3f000000;
 
-        private const string MainCharEntityFindPattern = "84 c9 74 15 80 3d ?? ?? ?? ?? 00 74 0c 48 8b 05 ?? ?? ?? ?? 48 85 c0 75 07 48 8b 05";
-        public int MainCharEntityPtrOffset = 0x01e7ccf0;
+        private const string MainCharEntityFindPattern = "C7 05 ?? ?? ?? ?? 00 00 00 E0 48 89 ?? ?? ?? ?? ?? 88 ?? ?? ?? ?? 02 88 ?? ?? ?? ?? 02 48 83 C4";
+        public int MainCharEntityPtrOffset = 0x0273e5e0;
 
         public void Update(ProcessReader reader)
         {
             int offset = Utils.BytePatternMatch(reader.ModuleMemory, EntityManagerPtrFindPattern);
-            int nextPcAddress = offset + 8;
+            int nextPcAddress = offset + 7;
             int ptrPcOffset = BitConverter.ToInt32(reader.ModuleMemory, offset + 3);
             EntityManagerPtrOffset = nextPcAddress + ptrPcOffset;
 
             offset = Utils.BytePatternMatch(reader.ModuleMemory, MainCharEntityFindPattern);
-            nextPcAddress = offset + 0x20;
-            ptrPcOffset = BitConverter.ToInt32(reader.ModuleMemory, offset + 0x1c);
+            nextPcAddress = offset + 17;
+            ptrPcOffset = BitConverter.ToInt32(reader.ModuleMemory, offset + 13);
             MainCharEntityPtrOffset = nextPcAddress + ptrPcOffset;
         }
     }
